@@ -3,6 +3,10 @@ import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 export default defineNuxtConfig({
   // devtools: { enabled: true },
 
+  plugins: [
+    '~/plugins/sweetalert2.js',
+  ],
+
   runtimeConfig: {
     // The private keys which are only available server-side
     apiSecret: "123",

@@ -20,14 +20,6 @@
             label="Description"
             v-model="payload.description"
           ></v-text-field>
-          <v-alert
-            v-if="response.message && response.color"
-            :color="response.color"
-            dense
-            dark
-          >
-            {{ response.message }}
-          </v-alert>
         </v-card-text>
 
         <v-card-actions>
@@ -51,58 +43,51 @@
 </template>
 <script setup>
 import { ref } from "vue";
+const { $swal } = useNuxtApp();
 const config = useRuntimeConfig();
 const emit = defineEmits(["created"]);
+
+const dialog = ref(false);
+const loading = ref(false);
 
 const payload = ref({
   name: "test",
   description: "test",
 });
 
-const response = ref({
-  message: null,
-  color: null,
-});
-const dialog = ref(false);
-const loading = ref(false);
-
 const baseUrl = config.public.baseUrl;
 
 async function submit() {
   try {
     loading.value = true;
+
     await $fetch(`${baseUrl}/product-categories`, {
       method: "POST",
       body: payload.value,
     });
 
-    response.value = {
-      message: "Product Category Interted",
-      color: "info",
-    };
-
-    emit("created");
-
     loading.value = false;
     close();
   } catch (error) {
-    response.value = {
-      message: "Exception Occurred: " + error,
-      color: "red",
-    };
-
     loading.value = false;
     close();
   }
 }
 
 function close() {
+  dialog.value = false;
+
   setTimeout(() => {
-    // response.value = {
-    //   message: null,
-    //   color: null,
-    // };
-    // dialog.value = false;
-  }, 2000);
+    $swal.fire({
+      showCancelButton: true,
+      showConfirmButton: false,
+      cancelButtonColor: "#2196f3",
+      cancelButtonText: "Close",
+      position: "center-center",
+      icon: "success",
+      title: "Product Category Interted",
+      timer: 3000,
+    });
+  }, 100);
 }
 </script>

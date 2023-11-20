@@ -5,14 +5,6 @@
       indeterminate
       color="purple"
     ></v-progress-linear>
-
-    <ResponseDialog
-      v-if="response.status"
-      :key="key"
-      :entity="`Product Category`"
-      :response="response"
-    />
-
     <v-data-table-server
       v-model:items-per-page="per_page"
       :headers="headers"
@@ -29,11 +21,7 @@
       <template v-slot:item.action="{ item, index }">
         <EditDialog />
         <DeleteEntity
-          @result="
-            (e) => {
-              (response = e), key++, data.data.splice(index, 1);
-            }
-          "
+          @result="(e) => data.data.splice(index, 1)"
           :id="item.id"
           :endpoint="endpoint"
         />
@@ -47,14 +35,6 @@ import { ref } from "vue";
 const { endpoint } = defineProps(["endpoint", "headers"]);
 
 const pageNumber = ref(1);
-
-const response = ref({
-  status: false,
-  message: "Item cannot delete",
-  color: "red",
-});
-
-const key = ref(0);
 
 const per_page = ref(10);
 

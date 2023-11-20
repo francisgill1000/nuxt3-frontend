@@ -2,38 +2,44 @@
   <v-icon size="small" color="red" @click="deleteItem">mdi-delete</v-icon>
 </template>
 <script setup>
+const { $swal } = useNuxtApp();
 const emit = defineEmits(["result"]);
-let key = ref(0);
 
 const { id, endpoint } = defineProps(["id", "endpoint"]);
 const config = useRuntimeConfig();
 const baseUrl = config.public.baseUrl;
 
-const response = ref({
-  status: false,
-  message: "Item cannot delete",
-  color: "red",
-});
-
 const deleteItem = async () => {
   try {
-    await $fetch(`${baseUrl}/${endpoint}/${id}`, {
-      method: "DELETE",
-    });
+    $swal
+      .fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      })
+      .then(async (result) => {
+        if (result.isConfirmed) {
+          await $fetch(`${baseUrl}/${endpoint}/${id}`, {
+            method: "DELETE",
+          });
 
-    response.value = {
-      status: true,
-      message: "Item has been deleted",
-      color: "info",
-    };
-    emit("result", response.value);
+          emit("result");
+
+          $swal.fire("Deleted!", "Your file has been deleted.", "success");
+        }
+      });
   } catch (error) {
-    response.value = {
-      status: true,
-      message: "Item cannot delete",
-      color: "red",
-    };
-    emit("result", response.value);
+    $swal.fire({
+      title: "Error!",
+      text: "Item cannot delete",
+      icon: "error",
+      confirmButtonText: "Close",
+    });
+    emit("result");
   }
 };
 </script>
