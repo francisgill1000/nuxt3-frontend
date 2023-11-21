@@ -45,7 +45,7 @@
 import { ref } from "vue";
 const { $swal } = useNuxtApp();
 const config = useRuntimeConfig();
-const emit = defineEmits(["created"]);
+const emit = defineEmits(["success"]);
 
 const dialog = ref(false);
 const loading = ref(false);
@@ -83,11 +83,12 @@ function close() {
       showConfirmButton: false,
       cancelButtonColor: "#2196f3",
       cancelButtonText: "Close",
-      position: "center-center",
+      position: "center",
       icon: "success",
-      title: "Product Category Interted",
+      title: "Product Category Inserted",
       timer: 3000,
     });
+    emit("success");
   }, 100);
 }
 </script>

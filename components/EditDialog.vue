@@ -1,7 +1,7 @@
 <template>
   <v-dialog width="500" v-model="dialog">
     <template v-slot:activator="{ props }">
-      <v-icon v-bind="props" size="small" color="info">mdi-pencil</v-icon>
+      <v-icon color="purple" v-bind="props">mdi-pencil</v-icon>
     </template>
 
     <template v-slot:default="{ isActive }">
@@ -20,14 +20,6 @@
             label="Description"
             v-model="payload.description"
           ></v-text-field>
-          <v-alert
-            v-if="response.message && response.color"
-            :color="response.color"
-            dense
-            dark
-          >
-            {{ response.message }}
-          </v-alert>
         </v-card-text>
 
         <v-card-actions>
@@ -51,55 +43,53 @@
 </template>
 <script setup>
 import { ref } from "vue";
+const { $swal } = useNuxtApp();
 const config = useRuntimeConfig();
+const emit = defineEmits(["success"]);
+const { item } = defineProps(["item"]);
 
-const payload = ref({
-  name: "test",
-  description: "test",
-});
-
-const response = ref({
-  message: null,
-  color: null,
-});
 const dialog = ref(false);
 const loading = ref(false);
+
+const payload = ref({
+  name: item.name,
+  description: item.description,
+});
 
 const baseUrl = config.public.baseUrl;
 
 async function submit() {
   try {
     loading.value = true;
-    await $fetch(`${baseUrl}/product-categories`, {
-      method: "POST",
+
+    await $fetch(`${baseUrl}/product-categories/${item.id}`, {
+      method: "PUT",
       body: payload.value,
     });
-
-    response.value = {
-      message: "Product Category Interted",
-      color: "info",
-    };
 
     loading.value = false;
     close();
   } catch (error) {
-    response.value = {
-      message: "Exception Occurred",
-      color: "red",
-    };
-
     loading.value = false;
     close();
   }
 }
 
 function close() {
+  dialog.value = false;
+
   setTimeout(() => {
-    response.value = {
-      message: null,
-      color: null,
-    };
-    dialog.value = false;
-  }, 2000);
+    $swal.fire({
+      showCancelButton: true,
+      showConfirmButton: false,
+      cancelButtonColor: "#2196f3",
+      cancelButtonText: "Close",
+      position: "center",
+      icon: "success",
+      title: "Product Category Updated",
+      timer: 3000,
+    });
+    emit("success");
+  }, 100);
 }
 </script>

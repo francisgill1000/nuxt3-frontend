@@ -32,7 +32,14 @@
 <script setup>
 import { ref } from "vue";
 
-const { endpoint } = defineProps(["endpoint", "headers"]);
+const endpoint = ref(`product-categories`);
+
+const headers = ref([
+  { value: "id", title: "Id" },
+  { value: "name", title: "Name" },
+  { value: "description", title: "Description" },
+  { value: "action", title: "Action" },
+]);
 
 const pageNumber = ref(1);
 
@@ -43,7 +50,7 @@ const config = useRuntimeConfig();
 const baseUrl = config.public.baseUrl;
 
 const { data, pending, refresh } = await useFetch(
-  () => `${baseUrl}/${endpoint}?page=${pageNumber}&perPage=${per_page.value}`
+  () => `${baseUrl}/${endpoint.value}?page=${pageNumber.value}&perPage=${per_page.value}`
 );
 
 function loadItems({ page, itemsPerPage }) {
